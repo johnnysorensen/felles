@@ -16,5 +16,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 `firebase login` (og klikk på lenken som vises)
 
 ### Gjør deploy
-`firebase deploy --only hosting`
+`npm run lintbuild`
 
+`firebase deploy --only hosting`
