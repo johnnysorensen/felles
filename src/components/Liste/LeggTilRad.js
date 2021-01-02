@@ -15,7 +15,6 @@ const LeggTilRad = ({ listeId, liste, lagNyRadFn, disabled = false }) => {
     <div>
       <IconButton
         edge="start"
-        className={'css.menuButton'}
         color="inherit"
         aria-label="Legg til rad"
         onClick={(event) => setAnchorEl(event.currentTarget)}

@@ -285,7 +285,7 @@ const Liste = ({ match, history }) => {
   }, [loading, liste]);
 
   return (
-    <div className={css.root}>
+    <div>
       <AppBar position="static">
         <Toolbar>
           <Menyknapp
@@ -304,7 +304,7 @@ const Liste = ({ match, history }) => {
           <LeggTilRad listeId={listeid} liste={liste} lagNyRadFn={lagNyRad} disabled={adminmodus} />
         </Toolbar>
       </AppBar>
-      <List className={'css.root'}>
+      <List>
         {error && <strong>Error: {JSON.stringify(error)}</strong>}
         {loading && <CircularProgress className={css.spinner} />}
         {liste &&

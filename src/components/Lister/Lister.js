@@ -5,13 +5,18 @@ import { COLLECTION_LISTE, COLLECTION_LISTER } from '../../utils/konstanter';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
-import Add from '@material-ui/icons/Add';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import Cancel from '@material-ui/icons/Cancel';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Edit from '@material-ui/icons/Edit';
 import css from './Lister.module.scss';
 import { isEscapePressed } from '../../utils/metoder';
+import ListItem from '@material-ui/core/ListItem';
+import List from '@material-ui/core/List';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 const lagNyListe = () => {
   firestore
@@ -84,7 +89,9 @@ const RadILenkeModus = ({ listeDok }) => {
   const url = `/liste/${listeDok.id}`;
   return (
     <>
-      <a href={url}>{data.navn}</a>
+      <ListItem component="a" href={url}>
+        {data.navn}
+      </ListItem>
       <IconButton
         aria-label="Endre navn"
         size="medium"
@@ -105,15 +112,15 @@ const RadILenkeModus = ({ listeDok }) => {
   );
 };
 
-const ListeLenke = ({ dokument }) => {
+const ListeRad = ({ dokument }) => {
   return (
-    <li>
+    <ListItem dense>
       {dokument.data().edit ? (
         <RadIEditModus listeDok={dokument} />
       ) : (
         <RadILenkeModus listeDok={dokument} />
       )}
-    </li>
+    </ListItem>
   );
 };
 
@@ -127,25 +134,28 @@ const Lister = () => {
 
   return (
     <div>
-      <header className={css.headerContainer}>
-        <h1 className={css.title}>Lister</h1>
-        <IconButton
-          color="primary"
-          aria-label="Opprett liste"
-          component="span"
-          className={css.headerElement}
-          onClick={() => lagNyListe()}
-          disabled={loading || !lister}
-        >
-          <Add />
-        </IconButton>
-      </header>
-      <ul className={css.content}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h1" className={css.title}>
+            Lister
+          </Typography>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="Opprett liste"
+            onClick={() => lagNyListe()}
+            disabled={loading || !lister}
+          >
+            <AddCircleIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <List className={'css.root'}>
         {error && <strong>Error: {JSON.stringify(error)}</strong>}
         {loading && <CircularProgress className={css.spinner} />}
         {lister &&
-          lister.docs.map((listeDok) => <ListeLenke key={listeDok.id} dokument={listeDok} />)}
-      </ul>
+          lister.docs.map((listeDok) => <ListeRad key={listeDok.id} dokument={listeDok} />)}
+      </List>
     </div>
   );
 };
