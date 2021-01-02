@@ -54,6 +54,7 @@ const RadIEditModus = ({ listeDok }) => {
       <TextField
         label="Listenavn"
         value={navn}
+        className={css.itempart}
         onChange={(event) => setNavn(event.target.value)}
         onBlur={() => lagreListe(listeDok, { navn })}
         onKeyDown={(event) => {
@@ -89,9 +90,9 @@ const RadILenkeModus = ({ listeDok }) => {
   const url = `/liste/${listeDok.id}`;
   return (
     <>
-      <ListItem component="a" href={url}>
+      <a className={css.itempart} href={url}>
         {data.navn}
-      </ListItem>
+      </a>
       <IconButton
         aria-label="Endre navn"
         size="medium"

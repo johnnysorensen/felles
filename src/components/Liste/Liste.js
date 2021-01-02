@@ -96,6 +96,7 @@ const RadIEditModus = ({ dokument }) => {
       <TextField
         label="Tekst"
         value={tekst}
+        className={css.itempart}
         onChange={(event) => setTekst(event.target.value)}
         onBlur={() => lagreRad(dokument, { tekst })}
         onKeyDown={(event) => {
@@ -135,16 +136,14 @@ const Listeelement = ({ dokument, adminmodus }) => {
 
   return (
     <ListItem dense>
-      <ListItemIcon>
-        <Checkbox
-          edge="start"
-          checked={data.utfoert}
-          onChange={() => endreUtfoertVerdi(data)}
-          disableRipple
-          inputProps={{ 'aria-labelledby': dokument.id }}
-          disabled={adminmodus}
-        />
-      </ListItemIcon>
+      <Checkbox
+        edge="start"
+        checked={data.utfoert}
+        onChange={() => endreUtfoertVerdi(data)}
+        disableRipple
+        inputProps={{ 'aria-labelledby': dokument.id }}
+        disabled={adminmodus}
+      />
       {data.edit ? (
         <RadIEditModus dokument={dokument} />
       ) : (
