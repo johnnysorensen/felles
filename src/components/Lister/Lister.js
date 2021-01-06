@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { firestore } from '../../index';
 import { COLLECTION_LISTE, COLLECTION_LISTER } from '../../utils/konstanter';
+import { isEmpty } from 'lodash';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
@@ -32,13 +33,17 @@ const lagNyListe = () => {
 
 const slettListe = (liste) => {
   liste.ref.set({ deleted: true }, { merge: true });
-  // liste.ref.delete().then(() => undefined, (err) => {
-  //     throw new Error('klarte ikke slette listen: ' + err)
-  // });
+
+  /* * Kode for å slette en liste umiddelbart. * *
+    liste.ref.delete().then(() => undefined, (err) => {
+        throw new Error('klarte ikke slette listen: ' + err)
+    });
+  */
 };
 
 const lagreListe = (liste, { navn }) => {
-  liste.ref.set({ edit: false, navn: navn || '' }, { merge: true });
+  const navnet = isEmpty(navn) ? 'uten navn' : navn;
+  liste.ref.set({ edit: false, navn: navnet }, { merge: true });
 };
 
 const rediger = (liste, edit = true) => {
