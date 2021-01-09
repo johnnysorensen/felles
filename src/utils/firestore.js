@@ -1,6 +1,5 @@
 import { firestore } from '../index';
 import { COLLECTION_LISTE, COLLECTION_LISTER } from './konstanter';
-import moment from 'moment';
 
 export const opprettNyRad = (listeId, nytekst, ordervalue, edit = false, aktiv = true) => {
   const tekst = nytekst.trim();
