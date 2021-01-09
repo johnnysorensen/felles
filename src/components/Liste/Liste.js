@@ -23,25 +23,26 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Edit from '@material-ui/icons/Edit';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import moment from 'moment';
 import LeggTilRad from './LeggTilRad';
 import { isEscapePressed } from '../../utils/metoder';
 import FileImportDialog from '../import/FileImportDialog';
 import Divider from '@material-ui/core/Divider';
-import { opprettNyRad } from '../../utils/firestore';
+import {
+  opprettNyRad,
+  applyDragMove,
+  sortOrdervalue,
+  sorterAlfabetisk,
+} from '../../utils/firestore';
+import { Container, Draggable } from 'react-smooth-dnd';
 
-const lagNyRad = (listeId, liste, tekst = '', edit = false) => {
+const lagEllerAktiverRad = (listeId, liste, tekst = '', ordervalue = 999, edit = false) => {
   const dokFraEksisterendeListe = liste.docs.find((dok) => {
     return (dok.data().tekst || '').toLowerCase() === tekst.toLocaleLowerCase();
   });
   if (dokFraEksisterendeListe) {
-    if (dokFraEksisterendeListe.data().aktiv) {
-      dokFraEksisterendeListe.ref.set({ opprettet: moment.now() }, { merge: true });
-    } else {
-      dokFraEksisterendeListe.ref.set({ aktiv: true, utfoert: false }, { merge: true });
-    }
+    dokFraEksisterendeListe.ref.set({ aktiv: true, utfoert: false, ordervalue }, { merge: true });
   } else {
-    opprettNyRad(listeId, tekst, edit);
+    opprettNyRad(listeId, tekst, ordervalue, edit);
   }
 };
 
@@ -65,18 +66,6 @@ const visDokumenter = (adminmodus) => (dokument) => {
   }
 
   return dokument.data().aktiv;
-};
-
-const sorterRader = (adminmodus) => (d1, d2) => {
-  if (adminmodus) {
-    const d1Navn = d1.data().tekst || '';
-    const d2Navn = d2.data().tekst || '';
-    return d1Navn.localeCompare(d2Navn);
-  } else {
-    const d1Opprettet = d1.data().opprettet || moment.now();
-    const d2Opprettet = d2.data().opprettet || moment.now();
-    return d1Opprettet - d2Opprettet;
-  }
 };
 
 const skjulUtfoerte = (liste) => {
@@ -300,20 +289,29 @@ const Liste = ({ match, history }) => {
             {listedokument && listedokument.navn}
             {adminmodus && ' (admin)'}
           </Typography>
-          <LeggTilRad listeId={listeid} liste={liste} lagNyRadFn={lagNyRad} disabled={adminmodus} />
+          <LeggTilRad
+            listeId={listeid}
+            liste={liste}
+            lagNyRadFn={lagEllerAktiverRad}
+            disabled={adminmodus}
+          />
         </Toolbar>
       </AppBar>
       <List>
-        {error && <strong>Error: {JSON.stringify(error)}</strong>}
-        {loading && <CircularProgress className={css.spinner} />}
-        {liste &&
-          liste.docs
-            .filter((dokument) => dokument.id !== 'dummydokument')
-            .filter(visDokumenter(adminmodus))
-            .sort(sorterRader(adminmodus))
-            .map((dokument) => (
-              <Listeelement key={dokument.id} dokument={dokument} adminmodus={adminmodus} />
-            ))}
+        <Container lockAxis="y" onDrop={(e) => applyDragMove(liste, e, sortOrdervalue)}>
+          {error && <strong>Error: {JSON.stringify(error)}</strong>}
+          {loading && <CircularProgress className={css.spinner} />}
+          {liste &&
+            liste.docs
+              .filter((dokument) => dokument.id !== 'dummydokument')
+              .filter(visDokumenter(adminmodus))
+              .sort(adminmodus ? sorterAlfabetisk : sortOrdervalue)
+              .map((dokument) => (
+                <Draggable key={dokument.id}>
+                  <Listeelement key={dokument.id} dokument={dokument} adminmodus={adminmodus} />
+                </Draggable>
+              ))}
+        </Container>
       </List>
     </div>
   );

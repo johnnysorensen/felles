@@ -4,7 +4,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Popover from '@material-ui/core/Popover';
 import NyRadForm from './NyRadFrom';
 
-const LeggTilRad = ({ listeId, liste, lagNyRadFn, disabled = false }) => {
+const LeggTilRad = ({ listeId, liste, lagNyRadFn, ordervalue = 999, disabled = false }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClose = () => {
@@ -38,7 +38,7 @@ const LeggTilRad = ({ listeId, liste, lagNyRadFn, disabled = false }) => {
         <NyRadForm
           liste={liste}
           onSubmit={(formverdier) => {
-            lagNyRadFn(listeId, liste, formverdier.radtekst);
+            lagNyRadFn(listeId, liste, formverdier.radtekst, ordervalue);
           }}
           handleClose={handleClose}
         />

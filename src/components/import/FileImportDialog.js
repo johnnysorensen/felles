@@ -17,7 +17,7 @@ const behandleImportertListe = (event, listeId, gjeldendeListe) => {
   const lines = event.target.result.split(/\r\n|\n/);
   uniq(lines).forEach((line) => {
     if (!eksisterendeTekster.includes(line.trim().toLowerCase())) {
-      opprettNyRad(listeId, line, false, false);
+      opprettNyRad(listeId, line, undefined, false, false);
     }
   });
 };

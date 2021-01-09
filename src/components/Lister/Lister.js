@@ -18,11 +18,13 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import { Container, Draggable } from 'react-smooth-dnd';
+import { applyDragMove, sortOrdervalue } from '../../utils/firestore';
 
-const lagNyListe = () => {
+const lagNyListe = (ordervalue) => {
   firestore
     .collection(COLLECTION_LISTER)
-    .add({ edit: true, deleted: false })
+    .add({ edit: true, ordervalue, deleted: false })
     .then((reference) => {
       reference
         .collection(COLLECTION_LISTE)
@@ -31,8 +33,8 @@ const lagNyListe = () => {
     });
 };
 
-const slettListe = (liste) => {
-  liste.ref.set({ deleted: true }, { merge: true });
+const slettListe = (listeDok) => {
+  listeDok.ref.set({ deleted: true }, { merge: true });
 
   /* * Kode for å slette en liste umiddelbart. * *
     liste.ref.delete().then(() => undefined, (err) => {
@@ -41,13 +43,13 @@ const slettListe = (liste) => {
   */
 };
 
-const lagreListe = (liste, { navn }) => {
+const lagreListe = (listeDok, { navn }) => {
   const navnet = isEmpty(navn) ? 'uten navn' : navn;
-  liste.ref.set({ edit: false, navn: navnet }, { merge: true });
+  listeDok.ref.set({ edit: false, navn: navnet }, { merge: true });
 };
 
-const rediger = (liste, edit = true) => {
-  liste.ref.set({ edit }, { merge: true });
+const rediger = (listeDok, edit = true) => {
+  listeDok.ref.set({ edit }, { merge: true });
 };
 
 const RadIEditModus = ({ listeDok }) => {
@@ -149,7 +151,7 @@ const Lister = () => {
             edge="start"
             color="inherit"
             aria-label="Opprett liste"
-            onClick={() => lagNyListe()}
+            onClick={() => lagNyListe(lister.docs.length)}
             disabled={loading || !lister}
           >
             <AddCircleIcon />
@@ -157,10 +159,18 @@ const Lister = () => {
         </Toolbar>
       </AppBar>
       <List className={'css.root'}>
-        {error && <strong>Error: {JSON.stringify(error)}</strong>}
-        {loading && <CircularProgress className={css.spinner} />}
-        {lister &&
-          lister.docs.map((listeDok) => <ListeRad key={listeDok.id} dokument={listeDok} />)}
+        <Container lockAxis="y" onDrop={(e) => applyDragMove(lister, e, sortOrdervalue)}>
+          {error && <strong>Error: {JSON.stringify(error)}</strong>}
+          {loading && <CircularProgress className={css.spinner} />}
+          {lister &&
+            lister.docs.sort(sortOrdervalue).map((listeDok) => {
+              return (
+                <Draggable key={listeDok.id}>
+                  <ListeRad dokument={listeDok} />
+                </Draggable>
+              );
+            })}
+        </Container>
       </List>
     </div>
   );
