@@ -172,6 +172,7 @@ const Lister = () => {
             })}
         </Container>
       </List>
+      <div id="emptyfooter" />
     </div>
   );
 };

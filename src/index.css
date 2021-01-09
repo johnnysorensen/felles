@@ -16,3 +16,7 @@ code {
   max-width:450px;
   margin: auto;
 }
+
+#emptyfooter {
+    height: 30px;
+}
