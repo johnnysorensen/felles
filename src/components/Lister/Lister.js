@@ -20,6 +20,8 @@ import Typography from '@material-ui/core/Typography';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { Container, Draggable } from 'react-smooth-dnd';
 import { applyDragMove, sortOrdervalue } from '../../utils/firestore';
+import DragIndicator from '@material-ui/icons/DragIndicator';
+import classnames from 'classnames';
 
 const lagNyListe = (ordervalue) => {
   firestore
@@ -97,6 +99,7 @@ const RadILenkeModus = ({ listeDok }) => {
   const url = `/liste/${listeDok.id}`;
   return (
     <>
+      <DragIndicator className={classnames('column-drag-handle', css.draggidentikator)} />
       <a className={css.itempart} href={url}>
         {data.navn}
       </a>
@@ -159,7 +162,12 @@ const Lister = () => {
         </Toolbar>
       </AppBar>
       <List className={'css.root'}>
-        <Container lockAxis="y" onDrop={(e) => applyDragMove(lister, e, sortOrdervalue)}>
+        <Container
+          lockAxis="y"
+          dragBeginDelay={500}
+          dragHandleSelector=".column-drag-handle"
+          onDrop={(e) => applyDragMove(lister, e, sortOrdervalue)}
+        >
           {error && <strong>Error: {JSON.stringify(error)}</strong>}
           {loading && <CircularProgress className={css.spinner} />}
           {lister &&

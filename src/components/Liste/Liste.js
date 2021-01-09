@@ -21,6 +21,7 @@ import CheckCircle from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Cancel';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Edit from '@material-ui/icons/Edit';
+import DragIndicator from '@material-ui/icons/DragIndicator';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import LeggTilRad from './LeggTilRad';
@@ -34,6 +35,7 @@ import {
   sorterAlfabetisk,
 } from '../../utils/firestore';
 import { Container, Draggable } from 'react-smooth-dnd';
+import classnames from 'classnames';
 
 const lagEllerAktiverRad = (listeId, liste, tekst = '', ordervalue = 999, edit = false) => {
   const dokFraEksisterendeListe = liste.docs.find((dok) => {
@@ -125,18 +127,21 @@ const Listeelement = ({ dokument, adminmodus }) => {
 
   return (
     <ListItem dense>
-      <Checkbox
-        edge="start"
-        checked={data.utfoert}
-        onChange={() => endreUtfoertVerdi(data)}
-        disableRipple
-        inputProps={{ 'aria-labelledby': dokument.id }}
-        disabled={adminmodus}
-      />
       {data.edit ? (
         <RadIEditModus dokument={dokument} />
       ) : (
         <>
+          {!adminmodus && (
+            <DragIndicator className={classnames('column-drag-handle', css.draggidentikator)} />
+          )}
+          <Checkbox
+            edge="start"
+            checked={data.utfoert}
+            onChange={() => endreUtfoertVerdi(data)}
+            disableRipple
+            inputProps={{ 'aria-labelledby': dokument.id }}
+            disabled={adminmodus}
+          />
           <ListItemText id={dokument.id} primary={data.tekst} />
           <IconButton
             aria-label="Endre tekst"
@@ -298,7 +303,12 @@ const Liste = ({ match, history }) => {
         </Toolbar>
       </AppBar>
       <List>
-        <Container lockAxis="y" onDrop={(e) => applyDragMove(liste, e, sortOrdervalue)}>
+        <Container
+          lockAxis="y"
+          dragBeginDelay={500}
+          dragHandleSelector=".column-drag-handle"
+          onDrop={(e) => applyDragMove(liste, e, sortOrdervalue)}
+        >
           {error && <strong>Error: {JSON.stringify(error)}</strong>}
           {loading && <CircularProgress className={css.spinner} />}
           {liste &&
