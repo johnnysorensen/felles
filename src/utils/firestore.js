@@ -21,13 +21,16 @@ export const applyDragMove = (liste, dragResult, listsortFn, filterFn = () => tr
   const itemToAdd = tmpListe.splice(removedIndex, 1)[0];
   tmpListe.splice(addedIndex, 0, itemToAdd);
 
-  liste.docs
-    .filter(filterFn)
-    .sort(listsortFn)
-    .forEach((listeDok, index) => {
-      const ordervalue = tmpListe[index].data().ordervalue;
-      listeDok.ref.set({ ordervalue }, { merge: true });
-    });
+  const sortert = tmpListe.map((dokument, index) => {
+    return dokument.id;
+  });
+
+  const antall = tmpListe.length;
+
+  liste.docs.filter(filterFn).forEach((listeDok, index) => {
+    const ordervalue = antall - sortert.indexOf(listeDok.id);
+    listeDok.ref.set({ ordervalue }, { merge: true });
+  });
 };
 
 export const sortOrdervalue = (dok1, dok2) => {
