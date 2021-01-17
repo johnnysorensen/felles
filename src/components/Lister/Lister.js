@@ -161,10 +161,9 @@ const Lister = () => {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <List className={'css.root'}>
+      <List className={css.listekontainer}>
         <Container
           lockAxis="y"
-          dragBeginDelay={500}
           dragHandleSelector=".column-drag-handle"
           onDrop={(e) => applyDragMove(lister, e, sortOrdervalue)}
         >

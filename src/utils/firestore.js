@@ -11,20 +11,23 @@ export const opprettNyRad = (listeId, nytekst, ordervalue, edit = false, aktiv =
     });
 };
 
-export const applyDragMove = (liste, dragResult, listsortFn) => {
+export const applyDragMove = (liste, dragResult, listsortFn, filterFn = () => true) => {
   const { removedIndex, addedIndex } = dragResult;
   if (removedIndex === null || addedIndex === null) {
     return;
   }
 
-  const tmpListe = [...liste.docs.sort(listsortFn)];
+  const tmpListe = [...liste.docs.filter(filterFn).sort(listsortFn)];
   const itemToAdd = tmpListe.splice(removedIndex, 1)[0];
   tmpListe.splice(addedIndex, 0, itemToAdd);
 
-  const antall = tmpListe.length;
-  tmpListe.forEach((listeDok, index) => {
-    listeDok.ref.set({ ordervalue: antall - index - 1 }, { merge: true });
-  });
+  liste.docs
+    .filter(filterFn)
+    .sort(listsortFn)
+    .forEach((listeDok, index) => {
+      const ordervalue = tmpListe[index].data().ordervalue;
+      listeDok.ref.set({ ordervalue }, { merge: true });
+    });
 };
 
 export const sortOrdervalue = (dok1, dok2) => {

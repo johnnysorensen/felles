@@ -62,7 +62,7 @@ const rediger = (dokument, edit = true) => {
   dokument.ref.set({ edit }, { merge: true });
 };
 
-const visDokumenter = (adminmodus) => (dokument) => {
+const visDokumenter = (dokument, adminmodus) => {
   if (adminmodus) {
     return true;
   }
@@ -277,6 +277,10 @@ const Liste = ({ match, history }) => {
     }
   }, [loading, liste]);
 
+  const filterFn = (dokument) => {
+    return dokument.id !== 'dummydokument' && visDokumenter(dokument, adminmodus);
+  };
+
   return (
     <div>
       <AppBar position="static">
@@ -302,25 +306,24 @@ const Liste = ({ match, history }) => {
           />
         </Toolbar>
       </AppBar>
-      <List>
+      <List className={css.listekontainer}>
         <Container
           lockAxis="y"
-          dragBeginDelay={500}
           dragHandleSelector=".column-drag-handle"
-          onDrop={(e) => applyDragMove(liste, e, sortOrdervalue)}
+          onDrop={(e) => applyDragMove(loading ? [] : liste, e, sortOrdervalue, filterFn)}
         >
           {error && <strong>Error: {JSON.stringify(error)}</strong>}
           {loading && <CircularProgress className={css.spinner} />}
-          {liste &&
-            liste.docs
-              .filter((dokument) => dokument.id !== 'dummydokument')
-              .filter(visDokumenter(adminmodus))
-              .sort(adminmodus ? sorterAlfabetisk : sortOrdervalue)
-              .map((dokument) => (
-                <Draggable key={dokument.id}>
-                  <Listeelement key={dokument.id} dokument={dokument} adminmodus={adminmodus} />
-                </Draggable>
-              ))}
+          {loading
+            ? []
+            : liste.docs
+                .filter(filterFn)
+                .sort(adminmodus ? sorterAlfabetisk : sortOrdervalue)
+                .map((dokument) => (
+                  <Draggable key={dokument.id}>
+                    <Listeelement dokument={dokument} adminmodus={adminmodus} />
+                  </Draggable>
+                ))}
         </Container>
       </List>
       <div id="emptyfooter" />
