@@ -23,7 +23,10 @@ import { applyDragMove, sortOrdervalue } from '../../utils/firestore';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import classnames from 'classnames';
 
-const lagNyListe = (ordervalue) => {
+const lagNyListe = (listedocs = []) => {
+  const ordervalue =
+    listedocs.map((doc) => doc.data().ordervalue || 0).reduce((a, b) => Math.max(a, b), 0) + 1;
+
   firestore
     .collection(COLLECTION_LISTER)
     .add({ edit: true, ordervalue, deleted: false })
@@ -154,7 +157,7 @@ const Lister = () => {
             edge="start"
             color="inherit"
             aria-label="Opprett liste"
-            onClick={() => lagNyListe(lister.docs.length)}
+            onClick={() => lagNyListe(lister.docs)}
             disabled={loading || !lister}
           >
             <AddCircleIcon />
