@@ -37,7 +37,8 @@ import {
 import { Container, Draggable } from 'react-smooth-dnd';
 import classnames from 'classnames';
 
-const lagEllerAktiverRad = (listeId, liste, tekst = '', ordervalue = 999, edit = false) => {
+const lagEllerAktiverRad = (listeId, liste, tekst = '', edit = false) => {
+  const ordervalue = liste ? liste.docs.length : 0;
   const dokFraEksisterendeListe = liste.docs.find((dok) => {
     return (dok.data().tekst || '').toLowerCase() === tekst.toLocaleLowerCase();
   });
